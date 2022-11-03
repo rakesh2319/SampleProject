@@ -30,6 +30,35 @@ export class Signin extends Component<p, s> {
     };
   }
 
+  validate = () => {
+    const {email, password} = this.state;
+    const data = {
+      email: email,
+      password: password,
+    };
+    console.log('data>>', data);
+    fetch('http://restapi.adequateshop.com/api/authaccount/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(result => {
+        if(result.code==0){
+          asyncstorage.setItem('Token', result.data.Token);  
+          console.log("token110", result.data.Token )
+        //console.log('new data', result), alert(result.message);
+        this.props.navigation.navigate("WelcomeScreen")
+      }else{
+        alert(result.message)
+      }
+    }
+      )
+      .catch(err => {
+        console.log('err', err.message);
+        alert(err);
+      });
+  };
   render() {
     return (
       <KeyboardAvoidingView style={{flex: 1}}>
@@ -109,7 +138,7 @@ export class Signin extends Component<p, s> {
                       backgroundColor: 'blue',
                     },
                   ]}
-                  //onPress={() => this.validate()}
+                  onPress={() => this.validate()}
                 >
                   <Text style={styles.signinT}>Sign in</Text>
                 </TouchableOpacity>

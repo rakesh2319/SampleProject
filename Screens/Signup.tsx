@@ -21,18 +21,43 @@ interface s {
   email: any;
   password: any;
   name: any;
-  confirmPassword: any;
 }
 export default class Signup extends Component<p, s> {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       name: '',
       email: '',
       password: '',
-      confirmPassword: '',
     };
   }
+
+  validate = () => {
+    const { email, password, name } = this.state;
+    const data = {
+      name: name,
+      email: email,
+      password: password,
+    };
+    console.log('data>>', data);
+    fetch('http://restapi.adequateshop.com/api/authaccount/registration', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(result => {
+        console.log('new data', result.message),
+         alert(result.message);
+      //    if(result.message==0){
+      //   this.props.navigation.navigate("Home")
+      // }
+    })
+      .catch(err => {
+        console.log('err', err.message);
+        alert(err);
+      });
+  };
 
   render() {
     return (
@@ -108,8 +133,7 @@ export default class Signup extends Component<p, s> {
                         backgroundColor: 'blue',
                       },
                     ]}
-                    //onPress={() => this.validate()}
-                    >
+                    onPress={() => this.validate()}>
                     <Text style={styles.signinT}>Sign up</Text>
                   </TouchableOpacity>
                   <View
