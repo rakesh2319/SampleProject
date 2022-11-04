@@ -48,7 +48,7 @@ export class Signin extends Component<p, s> {
           asyncstorage.setItem('Token', result.data.Token);  
           console.log("token110", result.data.Token )
         //console.log('new data', result), alert(result.message);
-        this.props.navigation.navigate("Home")
+        this.props.navigation.navigate("Dashboard")
       }else{
         alert(result.message)
       }
