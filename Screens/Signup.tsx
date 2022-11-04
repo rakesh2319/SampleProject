@@ -32,31 +32,39 @@ export default class Signup extends Component<p, s> {
     };
   }
 
-  validate = () => {
-    const { email, password, name } = this.state;
-    const data = {
-      name: name,
-      email: email,
-      password: password,
-    };
-    console.log('data>>', data);
-    fetch('http://restapi.adequateshop.com/api/authaccount/registration', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(result => {
-        console.log('new data', result.message),
-         alert(result.message);
-      //    if(result.message==0){
-      //   this.props.navigation.navigate("Home")
-      // }
-    })
-      .catch(err => {
-        console.log('err', err.message);
-        alert(err);
-      });
+  validate = async () => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (this.state.name == '') {
+      alert('Enter name');
+    } else if (this.state.email == '') {
+      alert('Enter email');
+    } else if (reg.test(this.state.email) == false) {
+      alert('Please enter valid email id.');
+    } else if (this.state.password == '') {
+      alert('Enter password');
+    } else {
+      const {name, email, password} = this.state;
+      const data = {
+        name: name,
+        email: email,
+        password: password,
+      };
+      console.log('data>>', data);
+      fetch('http://restapi.adequateshop.com/api/authaccount/registration', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log('new data', result);
+          //alert('Registered data succesfully');
+        })
+        .catch(err => {
+          console.log('err', err);
+          alert(err);
+        });
+    }
   };
 
   render() {
