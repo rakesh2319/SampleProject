@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  BackHandler
 } from 'react-native';
 import React, {Component} from 'react';
 import asyncStorage from '@react-native-async-storage/async-storage';
@@ -28,6 +29,24 @@ export class Dashboard extends Component<p, s> {
     this.getDatas();
   }
 
+  componentWillMount() {
+    BackHandler.addEventListener(
+        "hardwareBackPress",
+        this.handleBackButtonClick
+    );
+}
+
+handleBackButtonClick = () => {
+    BackHandler.exitApp()
+    return true;
+  };
+
+componentWillUnmount = async () => {
+    BackHandler.removeEventListener(
+        "hardwareBackPress",
+        this.handleBackButtonClick
+    );
+};
   getDatas = () => {
     fetch('https://dummyjson.com/products')
       .then(response => response.json())

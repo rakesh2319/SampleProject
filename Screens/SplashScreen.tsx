@@ -36,8 +36,8 @@ export class SplashScreen extends Component<p, s> {
     return (
       <View style={{flex: 1,justifyContent:'center',alignItems:'center'}}>
         <Image
-          source={require('../Assets/splashimage.jpg')}
-          style={{height: 100,width:100}}
+          source={require('../Assets/online.png')}
+          style={{height: "100%",width:"100%"}}
         />
       </View>
     );
