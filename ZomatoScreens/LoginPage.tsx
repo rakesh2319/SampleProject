@@ -9,8 +9,80 @@ import {
   TextInput,
 } from 'react-native';
 import React, {Component} from 'react';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 export class LoginPage extends Component {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      user: {},
+    };
+  }
+
+  componentDidMount() {
+    GoogleSignin.configure({
+      webClientId:
+        '<848650508945-qsss5gjue07h8pks82kfm8mpa8kfekm9.apps.googleusercontent.com>', // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+      accountName: '', // [Android] specifies an account name on the device that should be used
+      iosClientId:
+        '<848650508945-qsss5gjue07h8pks82kfm8mpa8kfekm9.apps.googleusercontent.com>', // [iOS] if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+      googleServicePlistPath: '', // [iOS] if you renamed your GoogleService-Info file, new name here, e.g. GoogleService-Info-Staging
+      openIdRealm: '', // [iOS] The OpenID2 realm of the home web server. This allows Google to include the user's OpenID Identifier in the OpenID Connect ID token.
+      profileImageSize: 120, // [iOS] The desired height (and width) of the profile image. Defaults to 120px
+    });
+    this.IsSignedIn(), [];
+  }
+
+  signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('due..', userInfo);
+      this.setState({user: userInfo});
+    } catch (err) {
+      console.log('error', err.message);
+      if (err.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User cancelled the login flow');
+      } else if (err.code === statusCodes.IN_PROGRESS) {
+        console.log('signed in');
+      } else if (err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('play services not available');
+      } else {
+        console.log('some other error happened');
+      }
+    }
+  };
+
+  IsSignedIn = async () => {
+    const isSignedIn = await GoogleSignin.isSignedIn();
+    //this.setState({isLoginScreenPresented: !isSignedIn});
+    if (!!isSignedIn) {
+      this.getCurrentUserInfo();
+    } else {
+      console.log('please login');
+    }
+  };
+
+  getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      console.log('edit', userInfo);
+      this.setState({user: userInfo});
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        console.log('user has not signed in yet');
+      } else {
+        console.log('some other error');
+      }
+    }
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -114,16 +186,20 @@ export class LoginPage extends Component {
               justifyContent: 'space-evenly',
               marginTop: 20,
             }}>
-            <Image
-              source={require('../Assets/googleicon.png')}
-              style={{
-                height: 30,
-                width: 30,
-                backgroundColor: 'white',
-                borderRadius: 8,
-                borderWidth: 0.2,
-              }}
-            />
+            <TouchableOpacity //onPress={this.IsSignedIn}
+            >
+              <Image
+                source={require('../Assets/googleicon.png')}
+                style={{
+                  height: 30,
+                  width: 30,
+                  backgroundColor: 'white',
+                  borderRadius: 8,
+                  borderWidth: 0.2,
+                }}
+              />
+            </TouchableOpacity>
+
             <Image
               source={require('../Assets/AppleLogo.png')}
               style={{
@@ -145,6 +221,13 @@ export class LoginPage extends Component {
               }}
             />
           </View>
+          <GoogleSigninButton
+            style={{width: 192, height: 48}}
+            size={GoogleSigninButton.Size.Wide}
+            //color={GoogleSigninButton.Color.Dark}
+            onPress={this.IsSignedIn}
+            //disabled={this.state.isSigninInProgress}
+          />
           <Text style={styles.agreeT}>By continuing, you agree to our</Text>
           <Text style={styles.TermsT}>
             Terms of service Privacy Policy Content Policies
